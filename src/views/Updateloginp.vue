@@ -1,0 +1,68 @@
+<template>
+  <div class="updateloginp">
+                  <!-- 头部 -->
+        <van-nav-bar title="修改登录密码" :fixed='true' @click-left='$router.back()'>
+        <template #left >
+            <van-icon name="arrow-left" color='#0ef8e1' size="20" />
+            <span style="color:#0ef8e1">返回</span>
+        </template>
+        </van-nav-bar>
+
+        <main class="main">
+             <h3>UPDATE LOGIN PASSWORD</h3>
+        <van-form @submit="onSubmit">
+            <van-field
+                v-model="oldPassword"
+                name="旧密码"
+                label="旧密码"
+                placeholder="请输入旧密码"
+                :rules="[{ required: true, message: '请填写旧密码' }]"
+            />
+            <van-field
+                v-model="newPassword"
+                type="password"
+                name="新密码"
+                label="新密码"
+                placeholder="请输入新密码"
+                :rules="[{ required: true, message: '请填写新密码' }]"
+            />
+            <div style="margin: 16px;">
+                <van-button round block type="info" native-type="submit" style="backgroundColor:#0ef8e1;border:none">确认修改</van-button>
+            </div>
+            </van-form>
+        </main>
+
+  </div>
+</template>
+
+<script>
+export default {
+    name : 'Updateloginp',
+    data() {
+        return {
+            oldPassword:'',
+            newPassword:''
+        }
+    },
+    methods: {
+        onSubmit() {
+            console.log('onSubmit')
+        }
+    },
+}
+</script>
+
+<style lang='less' scoped>
+    .main{
+        margin-top: 46px;
+        height: calc(100vh - 46px);
+        overflow: scroll;
+        h3{
+            text-align: center;
+            line-height: 100px;
+            font-size: 22px;
+            color: rgba(111, 111, 111, .5);
+            font-weight: 600;
+        }
+    }
+</style>

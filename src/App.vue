@@ -4,16 +4,17 @@
     <router-view/>
 
     <!-- 底部tabbar栏 -->
-    <van-tabbar v-model="activeIndex" active-color="#0ef8e1" inactive-color="#000" v-show='activeIndex != 1' class="tab">
+    <van-tabbar v-model="activeIndex" active-color="#0ef8e1" inactive-color="#000" v-show='showId' class="tab">
       <van-tabbar-item icon="star" to='/home'>精选</van-tabbar-item>
       <van-tabbar-item icon="shopping-cart" to='/buycar'>购物车</van-tabbar-item>
       <van-tabbar-item icon="manager" to='/mine'>我的</van-tabbar-item>
     </van-tabbar>
-    
+
   </div>
 </template>
 
 <script>
+import {mapActions} from 'vuex';
 export default {
   name : 'App',
   data() {
@@ -21,11 +22,14 @@ export default {
      
     }
   },
-  methods: {
-    
-  },
   created() {
-    
+    // 请求地址信息
+    this.$http.getLocation().then(data => {
+      this.changeCitym(data.result.addressComponent.city)
+    })
+  },
+  methods: {
+       ...mapActions(['changeCitym']),
   },
   computed:{
 
@@ -37,6 +41,10 @@ export default {
       set(newValue){
 
       }
+    },
+    // 获取显示属性
+    showId() {
+      return this.$route.meta.showId
     }
   }
 }

@@ -1,19 +1,19 @@
 <template>
   <div class="home">
     <!-- navbar  使用插槽-->
-    <van-nav-bar title="精选" :fixed='true'>
+    <van-nav-bar title="精选" :fixed='true' @click-left='toLocation' @click-right='toSearch'>
       <template #right>
         <van-icon name="search" color='#0ef8e1' size="20" />
       </template>
-      <template #left>
+      <template #left >
         <van-icon name="location" color='#0ef8e1' size="20" />
-        <span>深圳</span>
+        <span>{{city}}</span>
       </template>
     </van-nav-bar>
 
     <!-- 主要内容区。 -->
-    <main class="main" @scroll="mainScroll" ref="rmain">
-      <div class="content">
+    <main class="main" @scroll="mainScroll" ref="rmain" >
+      <div class="content" ref="rcontent">
 
         <div class="good-list" v-for="item in goodList" :key="item.id" @click="toDetail(item.id)">
           <img v-lazy="item.cover" alt="">
@@ -27,11 +27,15 @@
       </div>
     </main>
 
+    <!-- 跳转至顶部悬框 -->
+    <van-icon name="arrow-up" size='28' class="toup" v-show="isUp" @click='toUp'/>
+
   </div>
   
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
   name : 'Home',
   data() {
@@ -40,7 +44,8 @@ export default {
       totalPages:'',
       currentPage : 1,
       isfinaly: false,
-      // 懒加载配置
+      isUp:false,
+      activeToup : {},
     
     }
   },
@@ -52,12 +57,15 @@ export default {
       this.goodList = [...this.goodList,...data.data.data.data]
       this.totalPages = data.data.data.totalPages
       this.isfinaly = true
-    }) 
+    });
+
+
   },
   methods: {
     // 下拉触底事件
     mainScroll() {
       let {scrollHeight,scrollTop,offsetHeight} = this.$refs.rmain
+      this.isUp = scrollTop > 1500
       if(scrollHeight - scrollTop < offsetHeight + 2) {
         if(this.currentPage >= 12) {
           this.$toast('没有更多数据了');
@@ -77,11 +85,30 @@ export default {
     },
     // 跳转详情页
     toDetail(gid){
-      console.log(gid)
-      this.$router.push('/detail')
+      this.$router.push({
+          path:'/details',
+          query:{gid}}
+      )
+    },
+    // 点击跳转至顶部
+    toUp(){
+      let rscroll = this.$refs.rmain.scrollTop
+      // let rtop = rscroll/24
+      this.$refs.rmain.scrollTop = 0
+    },
+    // 点击搜索页面
+    toSearch() {
+      this.$router.push('/search')
+    },
+    // 点击去地址页面
+    toLocation() {
+      this.$router.push('/location')
     }
 
   },
+  computed:{
+    ...mapState(['city']),
+  }
 }
 </script>
 
@@ -89,7 +116,10 @@ export default {
   .home {
     width: 100vw;
     overflow: hidden;
+    // transform: translateY(0px);
+    // transition: all .8s;
 
+    // 商品详情样式
     .main{
       width: 100%;
       height: calc(100vh - 96px);
@@ -101,6 +131,7 @@ export default {
         display: flex;
         justify-content: space-around;
         flex-wrap: wrap;
+        // transition: all .8s;
         .good-list {
           width: 48vw;
           padding: 6px;
@@ -128,6 +159,13 @@ export default {
           }
         }
       }
+    }
+    // 回顶部样式
+    .toup {
+      position: fixed;
+      bottom: 60px;
+      right: 10px;
+      z-index: 99;
     }
   }
   
