@@ -2,10 +2,19 @@
   <div class="mine">
     <!-- 头部区域 -->
     <div class="header">
+      <template v-if="JSON.stringify(userInfo) != '{}'">
         <div class="myImg">
-          <img src="../assets/img/error.jpg" alt="" class="userImg1" @click="toLogin">
+          <img v-lazy="userInfo.avatar" alt="" class="userImg1">
+        </div>
+        <a href="#" class="login" >{{userInfo.nickname}}</a>
+      </template>
+      <template v-else>
+        <div class="myImg">
+          <img src="~assets/img/error.jpg" alt="" class="userImg1" @click="toLogin">
         </div>
         <a href="#" class="login" @click.prevent="toLogin">LOGIN</a>
+      </template>
+
     </div>
 
     <!-- 控制区域 -->
@@ -27,6 +36,8 @@
 </template>
 
 <script>
+import {mapState} from 'vuex';
+
 export default {
   name : 'Mine',
   data() {
@@ -34,12 +45,17 @@ export default {
       
     }
   },
+  created() {
+  },
   methods: {
     toLogin() {
-      console.log('eiuqwieu ')
       this.$router.push('/login')
     }
   },
+  computed: {
+    // 取出数据
+    ...mapState(['userInfo'])
+  }
 }
 </script>
 

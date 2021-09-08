@@ -13,7 +13,7 @@
         <van-form @submit="onSubmit">
             <van-field
                 v-model="username"
-                name="用户名"
+                name="username"
                 label="用户名"
                 placeholder="请输入用户名"
                 :rules="[{ required: true, message: '请填写用户名' }]"
@@ -21,7 +21,7 @@
             <van-field
                 v-model="password"
                 type="password"
-                name="密码"
+                name="password"
                 label="密码"
                 placeholder="请输入密码"
                 :rules="[{ required: true, message: '请填写密码' }]"
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex';
 export default {
     name: 'Login',
     data() {
@@ -45,8 +46,24 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['changeUserInfom']),
+        // 提交登录
         onSubmit(values) {
-            console.log('submit', values);
+            // console.log('submit', values);
+            this.$http.toLogiin(values.username,values.password).then(data => {
+                if(data.data.errcode == 90102) {
+                    this.$toast(data.data.errmsg)
+                }
+                if(data.data.errcode == 0) {
+                    // console.log(data.data)
+                    // 保存token
+                sessionStorage.setItem('token',data.data.data.token)
+                    // 保存至vuex
+                    this.changeUserInfom(data.data.data)
+                    this.$router.push('/mine')
+                }
+
+            })
         },
     },
 }
@@ -62,6 +79,7 @@ export default {
                 font-size: 30px;
                 color: rgba(111, 111, 111, .5);
                 font-weight: 600;
+                text-shadow: 2px 3px 2px rgba(73, 250, 235, 0.5);
             }
         }
     }

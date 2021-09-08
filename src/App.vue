@@ -27,9 +27,15 @@ export default {
     this.$http.getLocation().then(data => {
       this.changeCitym(data.result.addressComponent.city)
     })
+     // 请求用户信息
+    this.$http.getUserInfo().then(data => {
+      // console.log(data)
+      if (data.data.errcode == 90101) return
+      this.changeUserInfom(data.data.data)
+    })
   },
   methods: {
-       ...mapActions(['changeCitym']),
+       ...mapActions(['changeCitym','changeUserInfom']),
   },
   computed:{
 
@@ -55,4 +61,8 @@ export default {
   .tab{
     border-top: 1px solid rgba(222,222,222,.6);
   }
+  .main button.van-button--danger{
+            background-color: #0ef8e1;
+            border: none;
+        }
 </style>

@@ -9,22 +9,22 @@
         </van-nav-bar>
 
         <main class="main">
-            <van-row>
-                <van-col span="6">
-                    <img src="~assets/img/error.jpg" style="width:80px; height:80px; padding:8px" alt="">
-                </van-col>
-                <van-col span="18">
-                    <van-cell title="商品名称" is-link label="描述信息232423423423423423432432423" @click="toDetail()"/>
-                </van-col>
-            </van-row>
-            <van-row>
-                <van-col span="6">
-                    <img src="~assets/img/error.jpg" style="width:80px; height:80px; padding:8px" alt="">
-                </van-col>
-                <van-col span="18">
-                    <van-cell title="商品名称" is-link label="描述信息232423423423423423432432423" @click="toDetail()"/>
-                </van-col>
-            </van-row>
+            <div class="content" v-if="likeList">
+                <van-row v-for="item in likeList" :key="item.id">
+                    <van-col span="6">
+                        <img v-lazy="item.cover" style="width:80px; height:80px; padding:8px" alt="">
+                    </van-col>
+                    <van-col span="18">
+                        <van-cell :title="item.name.substring(0, 6)" is-link :label="item.name" @click="toDetail(item.id)"/>
+                    </van-col>
+                </van-row>
+            </div>
+            <div class="error" v-else>
+                收藏列表为空哦<br>
+                <h3 @click="toG">去挑选一些商品收藏吧</h3>
+            </div>
+            
+            
         </main>
 
   </div>
@@ -35,13 +35,30 @@ export default {
     name : 'Mylikes',
     data() {
         return {
-            
+            likeList:[],
         }
     },
+    created() {
+        this.getLikes()
+    },
     methods: {
+        toG() {
+            this.$router.push('/home')
+        },
+        // 获取收藏
+        getLikes() {
+            this.$http.getLikes().then (data => {
+                this.likeList = data.data.data
+                // console.log(data.data.data) 
+                // 渲染
+            })
+        },
         // 跳转至详情页
-        toDetail(){
-            console.log('detail')
+        toDetail(gid){
+            this.$router.push({
+                path:'/details',
+                query:{gid:gid}
+            })
         }
     },
 }
@@ -52,5 +69,13 @@ export default {
         margin-top: 46px;
         height: calc(100vh - 46px);
         overflow: scroll;
+        .error{
+            text-align: center;
+            padding-top: 100px;
+            h3 {
+                color: #0ef8e1;
+                font-size: 20px;
+            }
+        }
     }
 </style>

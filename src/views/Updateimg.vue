@@ -33,7 +33,7 @@
 </template>
 
 <script>
-// let reader = new FileReader();
+import {mapActions} from 'vuex'
 export default {
     name : 'Updateimg',
     data() {
@@ -42,15 +42,19 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['changeUserInfom']),
         // 读取照片
         fileChange() {
             let that = this
             let reader = new FileReader();
+            if(!this.$refs.filei.files[0]) {
+                return
+            }
+            console.log(this.$refs.filei.files[0])
             reader.readAsDataURL(this.$refs.filei.files[0]);
             reader.onload = function() {
-                // img.src = this.result;
-                that.avatar = this.result
                 // console.log(this.result)
+                that.avatar = this.result
             }
         },
         // 选择图片
@@ -60,7 +64,16 @@ export default {
        },
         //上传图片
        updateimgs() {
-           console.log('上传')
+           this.$toast('修改成功')
+        //    this.$http.setAvatar(data).then (data => {
+        //        console.log(data)
+        //    })
+
+            // 请求用户信息 修改vuex中的数据
+            // this.$http.getUserInfo().then(data => {
+            //     console.log(data.data.data)
+            //     this.changeUserInfom(data.data.data)
+            // })
        }
     },
 }

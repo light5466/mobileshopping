@@ -10,44 +10,98 @@
 
         <main class="main">
             <!-- 步骤七 -->
-            <van-steps :active="active">
+            <van-steps :active="status">
                 <van-step>未付款</van-step>
                 <van-step>已付款</van-step>
                 <van-step>已发货</van-step>
                 <van-step>已完成</van-step>
             </van-steps>
 
-            <!-- 地址栏 -->
-            <van-cell title="姓名：123333333333" label="详细地址" />
+            <!-- 地址栏:title="orderinfo.userAddress.name +' '+orderinfo.userAddress.mobile" 
+            :label="orderinfo.userAddress.province+' '+orderinfo.userAddress.city+' '+orderinfo.userAddress.country+' '+orderinfo.userAddress.detail"-->
+            <van-cell :title="addr.name +' '+addr.mobile" 
+            :label="addr.province+' '+addr.city+' '+addr.country+' '+addr.detail" />
 
             <!-- 订单商品 -->
-            <van-row>
+            <van-row v-for="item in orderinfo" :key="item.id">
                 <van-col span="6">
-                    <img src="~assets/img/error.jpg" style="width:80px; height:80px; padding:8px" alt="">
+                    <img v-lazy="item.cover" style="width:80px; height:80px; padding:8px" alt="#">
                 </van-col>
                 <van-col span="18">
-                    <van-cell title="商品名称" value='X3' label="描述信息232423423423423423432432423" @click="toDetail()"/>
+                    <van-cell :title="item.name.substring(0,6)" :value="'X'+item.count" :label="item.name" />
                 </van-col>
             </van-row>
 
         </main>
 
+        <!-- 结尾款项 -->
+        <footer>
+            <div class="fleft">
+                <span>合计：</span><span style="color:red">{{totalPriceD | priceFilter}}</span>
+            </div>
+            <button class="fright" @click="topay" v-if="orderinfo.order_status == 0">付款</button>
+            <button class="fright1" v-else>请等待发货</button>
+        </footer>
+
+        <!-- 支付密码框 -->
+        <pay-keyword :cid='cid' ></pay-keyword>
+
   </div>
 </template>
 
 <script>
+import PayKeyword from '../components/PayKeyword.vue';
 export default {
     name : 'Orderdetail',
     data() {
         return {
-            active:1,
+            orderinfo:[],
+            cid:'',
+            addr:{},
+            status:''
         }
+    },
+    components:{
+        PayKeyword
+    },
+    created() {
+        this.getOrder()
     },
     methods: {
-        toDetail(){
-            console.log('去详情页')
+        async getOrder(){
+            let {data} = await this.$http.getOrder(this.$route.query.orderid)
+            if(data.errcode != 0 ) {
+                this.$toast(data.errmsg)
+                this.$router.back()
+                return 
+            }
+            data.data.orderProducts.forEach((item,index) => {
+                item.id = index
+            })
+            this.orderinfo = data.data.orderProducts
+            this.addr = data.data.userAddress
+            this.status = data.data.order_status
+
+        },
+        // 付款
+        topay() {
+            this.cid = this.$route.query.orderid
+            // 偏方弹出密码框
+            this.$children[this.$children.length - 1].show = true
         }
     },
+    computed:{
+        totalPriceD: {
+            get(){
+                return this.orderinfo.reduce((pre,item) => {
+                    return pre + item.count*item.price
+                },0)
+            },
+            set(newValue){
+
+            }
+        }
+    }
 }
 </script>
 
@@ -58,4 +112,45 @@ export default {
         overflow: scroll;
 
     }
+    footer{
+        width: 100vw;
+        height: 50px;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        border-top: 1px solid #eee;
+        .fleft {
+            float: left;
+            line-height: 50px;
+            margin-left: 20px;
+            font-size: 16px;
+        }
+        .fright {
+            float: right;
+            margin-right: 20px;
+            width: 80px;
+            height: 40px;
+            border: none;
+            margin-top: 5px;
+            line-height: 40px;
+            text-align: center;
+            color: #555;
+            background-color: #0ef8e1;
+            border-radius: 8px;
+        }
+        .fright1 {
+            float: right;
+            margin-right: 20px;
+            width: 90px;
+            height: 40px;
+            border: none;
+            margin-top: 5px;
+            line-height: 40px;
+            text-align: center;
+            color: #eee;
+            background-color: #999;
+            border-radius: 8px;
+        }
+    }
+
 </style>

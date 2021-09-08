@@ -9,7 +9,7 @@
         </van-nav-bar>
 
         <main class="main">
-            <h3>UPDATE AVATAR</h3>
+            <h3>UPDATE NICKNAME</h3>
             <van-form @submit="onSubmit">
                 <van-field
                     v-model="newName"
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
     name : 'Updatenick',
     data() {
@@ -36,8 +37,17 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['changeUserInfom']),
         onSubmit() {
-            console.log('name')
+            this.$http.updateSetting(this.newName).then (data => {
+                this.$toast('修改成功！')
+                this.newName = ''
+                  // 请求用户信息 修改vuex中的数据
+                this.$http.getUserInfo().then(data => {
+                    console.log(data.data.data)
+                    this.changeUserInfom(data.data.data)
+                })
+            })
         }
     },
 }
@@ -54,6 +64,7 @@ export default {
             font-size: 22px;
             color: rgba(111, 111, 111, .5);
             font-weight: 600;
+            text-shadow: 2px 3px 2px rgba(73, 250, 235, 0.5);
         }
     }
 </style>

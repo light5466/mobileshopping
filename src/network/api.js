@@ -69,13 +69,13 @@ export default {
         })
     },
     // /user/avatar 获取用户头像
-    setAvatar() {
+    setAvatar(data) {
         return httpRequest.request({
             url:'/user/avatar',
             method:'post',
             data:{
                 // 需要修改
-                avatar:'blob文件对象'
+                avatar:data
             }
             // 需要登录
         })
@@ -101,7 +101,7 @@ export default {
     // 修改收货地址
     updateAddress(obj) {
         return httpRequest.request({
-            url:'/user_address/update',
+            url:'/user_address/update?id='+obj.id,
             method:'post',
             data:{
                 name:obj.name,
@@ -223,7 +223,7 @@ export default {
         })
     },
      // 单个商品更新购物车
-     updateCarList(id,count,checked=1) {
+     updateCarList(id,count=1,checked=1) {
         return httpRequest.request({
             url: '/cart/update', 
             method: 'post',
@@ -279,7 +279,7 @@ export default {
         })
     },
     // 订单分页与搜索
-    getOrderPage(page) {
+    getOrderPage(page=1) {
         return httpRequest.request({
             url: '/order/pagination', 
             method: 'get',

@@ -9,24 +9,18 @@
         </van-nav-bar>
 
         <main class="main">
-            <van-cell title="订单号" is-link @click="toOrderInfo()" />
-            <van-row>
-                <van-col span="6">
-                    <img src="~assets/img/error.jpg" style="width:80px; height:80px; padding:8px" alt="">
-                </van-col>
-                <van-col span="18">
-                    <van-cell title="商品名称" is-link label="描述信息232423423423423423432432423" @click="toDetail()"/>
-                </van-col>
-            </van-row>
-            <van-row>
-                <van-col span="6">
-                    <img src="~assets/img/error.jpg" style="width:80px; height:80px; padding:8px" alt="">
-                </van-col>
-                <van-col span="18">
-                    <van-cell title="商品名称" is-link label="描述信息232423423423423423432432423" @click="toDetail()"/>
-                </van-col>
-            </van-row>
-            
+            <div v-for="item in lists" :key="item.id">
+                <van-cell :title="'订单号:'+item.id" is-link @click="toOrderInfo(item.id)" />
+                <van-row v-for="info in item.orderProducts" :key="info.id">
+                    <van-col span="6">
+                        <img v-lazy="info.cover" style="width:80px; height:80px; padding:8px" alt="">
+                    </van-col>
+                    <van-col span="18">
+                        <van-cell :title="info.name.split(' ')[0]" is-link :label="info.name" @click="toDetail(info.id)"/>
+                    </van-col>
+                </van-row>
+            </div>
+
         </main>
         
   </div>
@@ -37,21 +31,35 @@ export default {
     name : 'Myorder',
     data() {
         return {
-            
+            lists:[],
         }
     },
+    created() {
+        // 获取订单详情
+        this.getOrder()
+    },
     methods: {
+        // 获取订单详情
+        getOrder(){
+            this.$http.getOrderPage().then (data => {
+                // 渲染
+                // console.log(data.data.data.data)
+                this.lists = data.data.data.data
+            })
+        },
         //跳转订单详情
-        toOrderInfo() {
+        toOrderInfo(did) {
             this.$router.push({
                 path:'/orderdetail',
-                // query:{order}
+                query:{orderid:did}
             })
-            console.log('123')
         },
         // 点击跳转至详情
-        toDetail() {
-            console.log('详情页')
+        toDetail(id) {
+            this.$router.push({
+                path:'/details',
+                query:{gid:id}
+            })
         }
     },
 }

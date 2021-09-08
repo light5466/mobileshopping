@@ -2,16 +2,18 @@ import axios from 'axios';
 // 引入toast
 import { Toast } from 'vant';
 let loading = '';
-// 获取用户唯一标识
+
+// // 获取用户唯一标识
 let token = sessionStorage.getItem('token')
+
 export default {
 
     request(obj) {
         const request = axios.create({
-            timeout:5000,
+            timeout:2000,
             baseURL:'api/v4',
             // 设置请求头token
-            headers: {'accessToken': token}
+            headers: {'Authorization': token}
         })
 
         // 设置请求拦截 发送前可以查看发送的数据是否合理

@@ -1,7 +1,7 @@
 <template>
   <div class="Updateaddress">
                   <!-- 头部 -->
-        <van-nav-bar title="收货地址" :fixed='true' @click-left='$router.back()'>
+        <van-nav-bar :title="$route.query.ids == 0?'添加地址':'修改地址'" :fixed='true' @click-left='$router.back()'>
         <template #left >
             <van-icon name="arrow-left" color='#0ef8e1' size="20" />
             <span style="color:#0ef8e1">返回</span>
@@ -10,100 +10,92 @@
 
         <main class="main">
             <h3>ADDRESS</h3>
-            <van-form @submit="onSubmit">
-                <!-- 输入任意文本 -->
-                <van-field v-model="text" label="姓名" placeholder="请输入姓名"/>
-                <!-- 输入手机号，调起手机号键盘 -->
-                <van-field v-model="tel" type="tel" label="电话" placeholder="请输入手机号码"/>
-                <!-- <van-picker show-toolbar title="标题" :columns="columns" /> -->
-                <van-field
-                readonly
-                clickable
-                label="地区"
-                :value="addressc"
-                placeholder="选择省/市/区"
-                @click="showPicker = true"
-                />
-                <van-popup v-model="showPicker" round position="bottom">
-                <van-picker
-                    show-toolbar
-                    :columns="columns"
-                    @cancel="showPicker = false"
-                    @confirm="onConfirm"
-                />
-                </van-popup>
-                <van-field v-model="address" label="详细地址" placeholder="街道小区门牌号"/>
-                <van-cell title="设置为默认收货地址" >
-                <template #right-icon>
-                    <van-switch v-model="switchChecked" size="20" />
-                </template>
-                </van-cell>
 
-                <div style="margin: 16px;">
-                    <van-button round block type="info" native-type="submit" style="backgroundColor:#0ef8e1;border:none">确认</van-button>
-                </div>
-            </van-form>
-
-            
+                <van-address-edit
+                :area-list="areaList"
+                :show-delete="$route.query.ids!=0"
+                show-set-default
+                :address-info="addressInfo"
+                @save="addEditAddress"
+                @delete="delAddress"
+                />
+  
         </main>
 
   </div>
 </template>
 
 <script>
+import {mapState,mapMutations} from 'vuex';
+import { areaList } from '@vant/area-data'
 export default {
     name : 'Updateaddress',
     data() {
         return {
-            text:'',
-            tel:'',
-            showPicker:false,
-            addressc:'',
-            address:'',
-            switchChecked:false,
-            columns: [
-                        {
-                        text: '浙江',
-                        children: [
-                            {
-                            text: '杭州',
-                            children: [{ text: '西湖区' }, { text: '余杭区' }],
-                            },
-                            {
-                            text: '温州',
-                            children: [{ text: '鹿城区' }, { text: '瓯海区' }],
-                            },
-                        ],
-                        },
-                        {
-                        text: '福建',
-                        children: [
-                            {
-                            text: '福州',
-                            children: [{ text: '鼓楼区' }, { text: '台江区' }],
-                            },
-                            {
-                            text: '厦门',
-                            children: [{ text: '思明区' }, { text: '海沧区' }],
-                            },
-                        ],
-                        },
-                    ],
+            areaList:areaList,
+            addressInfo:{}
 
         }
     },
-    methods: {
-        // 点击编辑完成
-        onSubmit() {
-            console.log('编辑完成')
-        },
-        // 选中之后
-        onConfirm(value) {
-            this.addressc = value;
-            console.log(this.addressc)
-            this.showPicker = false;
-        },
+    created() {
+        // this.$route.query.ids
+        this.getAddress(this.$route.query.ids)
     },
+    methods: {
+        ...mapMutations(['changeAddr']),
+        getAddress(ids) {
+            if(ids == 0) {
+                return 
+            }else {
+                this.userInfo.addressList.filter((item) => {
+                    if(item.id == ids) {
+                        this.addressInfo.id = item.id
+                        this.addressInfo.name = item.name
+                        this.addressInfo.tel = item.mobile
+                        this.addressInfo.province = item.province
+                        this.addressInfo.city = item.city
+                        this.addressInfo.county = item.country
+                        this.addressInfo.addressDetail = item.detail
+                    }
+                })
+            }
+        },
+        addEditAddress(content){
+            // console.log('不存在',content)
+            // 判断是否存在，如果存在则修改，不存在则添加
+            if(this.$route.query.ids == 0) {
+                
+                let {name,province,city,county:country,addressDetail:detail,tel:mobile,areaCode:code} = content
+                this.$http.addAddress({name,province,city,country,detail,mobile,code,default:0}).then(data => {
+                    // console.log(data.data.data)
+                    let {id,name,province,city,country,detail,mobile,code} = data.data.data
+                    this.changeAddr({id,name,province,city,country,detail,mobile,code,type:'add'})
+                    if (data.data.errcode == 0) this.$toast("添加成功")
+                    this.$router.back()
+                })
+            }else {
+                // console.log('czai ')
+                let {id,name,province,city,county:country,addressDetail:detail,tel:mobile,areaCode:code} = content
+                this.$http.updateAddress({id,name,province,city,country,detail,mobile,code,default:0}).then(data => {
+                    this.changeAddr({id,name,province,city,country,detail,mobile,code,type:'edit'})
+                    if (data.data.errcode == 0) this.$toast("修改成功")
+                    this.$router.back()
+                })
+            }
+        },
+        delAddress() {
+            // console.log('del')
+            this.$http.deleteAddress(this.$route.query.ids).then(data => {
+                this.changeAddr({id:this.$route.query.ids,type:'del'})
+                this.$toast('删除成功')
+                this.$router.back()
+            })
+        }
+
+    },
+    computed: {
+        ...mapState(['userInfo'])
+    }
 }
 </script>
 
@@ -121,6 +113,8 @@ export default {
             font-size: 22px;
             color: rgba(111, 111, 111, .5);
             font-weight: 600;
+            text-shadow: 2px 3px 2px rgba(73, 250, 235, 0.5);
         }
     }
+    
 </style>

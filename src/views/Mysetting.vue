@@ -15,18 +15,36 @@
             <p class="titles">安全信息</p>
             <van-cell icon='youzan-shield' title="修改登录密码" is-link to="/updateloginp"/>
             <van-cell icon='card' title="修改支付密码" is-link to="/updatepayp"/>
+
+            <div class="bc">
+                <van-button round type="danger" block @click="signOut">退出登录</van-button>
+            </div>
+            
         </main>
 
   </div>
 </template>
 
 <script>
+import {mapMutations} from 'vuex'
 export default {
     name : 'Mysetting',
     data() {
         return {
             
         }
+    },
+    methods: {
+        ...mapMutations(['changeUserInfo']),
+        signOut(){
+            sessionStorage.removeItem("token")
+            this.changeUserInfo({})
+            this.$router.push('/mine')
+            // this.$http.getSignOut().then(data => {
+            //     console.log(data)
+                
+            // })  
+        },
     },
 }
 </script>
@@ -41,6 +59,10 @@ export default {
             font-size: 14px;
             padding-left: 10px;
             line-height: 30px;
+        }
+        .bc {
+            width: 100vw;
+            margin-top: 50px;
         }
     }
 </style>

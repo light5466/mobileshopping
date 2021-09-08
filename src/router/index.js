@@ -2,6 +2,8 @@
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import store from '../store/index';
+
 const home = () => import('views/Home.vue')
 const buycar = () => import('views/Buycar.vue')
 const mine = () => import('views/Mine.vue')
@@ -20,7 +22,15 @@ const updatenick = () => import('views/Updatenick.vue')
 const updateloginp = () => import('views/Updateloginp.vue')
 const updateaddress = () => import('views/Updateaddress.vue')
 const orderdetail = () => import('views/Orderdetail.vue')
+const orderok = () => import('views/Orderok.vue')
+const addrescheck = () => import('views/Addrescheck.vue')
+const success = () => import('views/Success.vue')
 
+//解决跳转重定向报错的问题
+const originalReplace = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalReplace.call(this, location).catch(err => err)
+}
 
 Vue.use(VueRouter);
 
@@ -44,7 +54,8 @@ const routes = [
     name: 'Buycar',
     component: buycar,
     meta:{
-      activeIndex : 1
+      activeIndex : 1,
+      islogin:true
     }
   },
   // 我的
@@ -95,24 +106,36 @@ const routes = [
     path: '/myorder',
     name: 'myorder',
     component: myorder,
+    meta:{
+      islogin:true
+    }
   },
   // 我的收获地址、
   {
     path: '/myaddress',
     name: 'Myaddress',
     component: myaddress,
+    meta:{
+      islogin:true
+    }
   },
   // 用户设置
   {
     path: '/mysetting',
     name: 'Mysetting',
     component: mysetting,
+    meta:{
+      islogin:true
+    }
   },
   // 我的收藏
   {
     path: '/mylikes',
     name: 'Mylikes',
     component: mylikes,
+    meta:{
+      islogin:true
+    }
   },
   // 修改用户昵称、
   {
@@ -150,6 +173,27 @@ const routes = [
     name: 'Orderdetail',
     component: orderdetail,
   },
+  // 确认订单
+  {
+    path: '/orderok',
+    name: 'Orderok',
+    component: orderok,
+    meta:{
+      islogin:true
+    }
+  },
+  // addresscheck选择收获地址
+  {
+    path: '/addrescheck',
+    name: 'Addrescheck',
+    component: addrescheck,
+  },
+  // 成功页面
+  {
+    path: '/success',
+    name: 'Success',
+    component: success,
+  },
   
   
 
@@ -160,6 +204,21 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  if(to.meta.islogin) {
+    // 需要登录
+    setTimeout(() => {
+      if(store.getters.isLogin) {
+          next('/login')
+      }else {
+        next()
+      }
+    }, 200);
+  }else {
+    next()
+  }
+})
 
 export default router;
 

@@ -59,10 +59,10 @@
 
       <!-- 底部购买 -->
       <van-goods-action>
-        <van-goods-action-icon icon="cart" text="购物车" />
-        <van-goods-action-icon icon="star" text="收藏" /> 
-        <van-goods-action-button type="warning" text="加入购物车" />
-        <van-goods-action-button type="danger" text="立即购买" />
+        <van-goods-action-icon icon="star" text="收藏" :color="isLikes ? 'red':''" @click="addLikes()"/>
+        <van-goods-action-icon icon="cart" text="购物车" @click="toBuyCar"/> 
+        <van-goods-action-button type="warning" text="加入购物车" @click="addCar()"/>
+        <van-goods-action-button type="danger" text="立即购买" @click="buyNow"/>
       </van-goods-action>
 
       </div>
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import {mapState,mapMutations,mapGetters} from 'vuex';
 export default {
     name : 'Details',
     data() {
@@ -88,17 +89,84 @@ export default {
       
     },
     methods: {
+      ...mapMutations(['changeLikes']),
+      // 加入收藏
+      addLikes() {
+        if(this.isLogin) {
+          this.$router.push('/login')
+          return
+        }
+        if(this.isLikes) {
+          // 已经收藏
+          this.$http.deleteLikes(this.goodsInfo.id)
+          // 删除vuex里面的收藏
+          this.changeLikes(this.goodsInfo.id)
+        }else {
+          this.$http.addLikes(this.goodsInfo.id)
+          // 添加vuex里面的收藏
+          this.changeLikes({
+            product_id: this.goodsInfo.id,
+            name: this.goodsInfo.name,
+            price: this.goodsInfo.price,
+            cover: this.goodsInfo.cover
+          })
+        }
+      },
+      // 去购物车
+      toBuyCar() {
+        if(this.isLogin) {
+          this.$router.push('/login')
+          return
+        }
+        this.$router.push('/buycar')
+      },
+      // 加入购物车
+      addCar() {
+        if(this.isLogin) {
+          this.$router.push('/login')
+          return
+        }
+        // console.log('加入购物车')
+        this.$http.updateCarList(this.goodsInfo.id).then(data => {
+          this.$toast('添加成功')
+        })
+      },
+      // 立即购买
+      buyNow() {
+        if(this.isLogin) {
+          this.$router.push('/login')
+          return
+        }
+        let {id,cover,name,price} = this.goodsInfo
+        sessionStorage.setItem('cars',JSON.stringify([{id,cover,name,price,count:1}]))
+        this.$router.push({
+          path:'/orderok'
+        })
+      },
+      // 点击切换
       changeInfo(iid){
         this.isshow = iid
       },
       // 请求商品详情
       getDetails(gid) {
         this.$http.getGoodsDetails(gid).then(data => {
-          // console.log(data.data.data)
+          // console.log(data.data.data.id)
           this.goodsInfo = data.data.data
         })
       }
     },
+    computed:{
+      ...mapState(['userInfo']),
+      ...mapGetters(['isLogin']),
+      // 判断是否收藏
+      isLikes() {
+        if(this.isLogin) return false
+        if(!this.isLogin) {
+          if(!this.userInfo.likeList.length) return false
+        }
+        return this.userInfo.likeList.some(item => item.product_id == this.goodsInfo.id)
+      }
+    }
 }
 </script>
 

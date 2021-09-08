@@ -1,34 +1,34 @@
 <template>
-  <div class="address">
+  <div class="addresscheck">
             <!-- 头部 -->
-        <van-nav-bar title="收货地址" :fixed='true' @click-left='$router.back()'>
+        <van-nav-bar title="请选择收货地址" :fixed='true' @click-left='$router.back()'>
         <template #left >
             <van-icon name="arrow-left" color='#0ef8e1' size="20" />
             <span style="color:#0ef8e1">返回</span>
         </template>
         </van-nav-bar>
 
-        <main class="main">
-            <div class="error" v-show="!list.length">
-                地址信息为空！马上编辑一个吧
-            </div>
+         <main class="main">
             <van-address-list
-            :disabled-list="list"
+            v-model="chosenAddressId"
+            :list="list"
             @add="onAdd"
-            @edit-disabled="onEdit"
+            @edit="onEdit"
+            @select="selectA"
             />
         </main>
 
   </div>
 </template>
 
+
 <script>
 import {mapState } from 'vuex'
 export default {
-    name : 'Myaddress',
+    name : 'Addresscheck',
     data() {
         return {
-            // chosenAddressId:'1',
+            chosenAddressId:'1',
             list: [],
         }
     },
@@ -63,6 +63,13 @@ export default {
                 query:{ids:item.id}
             })
         },
+        selectA(item) {
+            // console.log(item.id)
+            this.$router.push({
+                path:'/orderok',
+                query:{id:item.id}
+            })
+        }
     },
     computed:{
         ...mapState(['userInfo'])
@@ -81,10 +88,6 @@ export default {
         .van-button--danger{
             background-color: #0ef8e1;
             border: none;
-        }
-        .error{
-            text-align: center;
-            padding-top: 100px;
         }
         
     }
