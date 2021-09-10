@@ -1,7 +1,7 @@
 <template>
   <div class="address">
             <!-- 头部 -->
-        <van-nav-bar title="收货地址" :fixed='true' @click-left='$router.back()'>
+        <van-nav-bar title="收货地址" :fixed='true' @click-left="$router.push('/mine')">
         <template #left >
             <van-icon name="arrow-left" color='#0ef8e1' size="20" />
             <span style="color:#0ef8e1">返回</span>
@@ -57,7 +57,6 @@ export default {
             })
         },
         onEdit(item) {
-            // console.log(item,index)
             this.$router.push({
                 path:'/updateaddress',
                 query:{ids:item.id}

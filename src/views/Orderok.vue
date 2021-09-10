@@ -72,7 +72,6 @@ export default {
             if(!this.$route.query.id) return this.$toast('请选择收获地址')
             // 发送创建订单请求，然后弹出密码框 输入密码  跳转成功或者订单详情
             this.$http.addOrder(this.lists,this.$route.query.id).then(data => {
-                console.log(data)
                 this.cid = data.data.data.id
                 // 订单出错说明
                 if(data.data.errcode != 0) return this.$toast(data.data.errmsg)

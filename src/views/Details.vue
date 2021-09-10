@@ -1,17 +1,16 @@
 <template>
   <div class="detail">
      <!-- 头部导航 -->
-    <!-- <van-nav-bar title="产品详情" :fixed='true' left-text="返回" left-arrow @click-left='$router.back()'>
-    </van-nav-bar> -->
     <van-nav-bar title="产品详情" :fixed='true' @click-left='$router.back()'>
       <template #left >
           <van-icon name="arrow-left" color='#0ef8e1' size="20" />
           <span style="color:#0ef8e1">返回</span>
       </template>
-      </van-nav-bar>
+    </van-nav-bar>
 
     <!-- 商品详情区 -->
     <main class="main">
+      <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
       <div class="content">
         <!-- 轮播图 -->
         <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
@@ -66,9 +65,9 @@
       </van-goods-action>
 
       </div>
+      </van-pull-refresh>
     </main>
-
-
+    
   </div>
 </template>
 
@@ -78,18 +77,23 @@ export default {
     name : 'Details',
     data() {
       return {
-        // gid:'',
         goodsInfo : {},
-        isshow:1
+        isshow:1,
+        isLoading: false,
       }
     },
     created() {
-      // this.gid = this.$route.query.gid
       this.getDetails(this.$route.query.gid)
-      
     },
     methods: {
       ...mapMutations(['changeLikes']),
+      // 下拉刷新
+        onRefresh() {
+            setTimeout(() => {
+                this.$toast('刷新成功');
+                this.isLoading = false;
+            }, 1000);
+        },
       // 加入收藏
       addLikes() {
         if(this.isLogin) {
@@ -126,7 +130,6 @@ export default {
           this.$router.push('/login')
           return
         }
-        // console.log('加入购物车')
         this.$http.updateCarList(this.goodsInfo.id).then(data => {
           this.$toast('添加成功')
         })
@@ -137,8 +140,8 @@ export default {
           this.$router.push('/login')
           return
         }
-        let {id,cover,name,price} = this.goodsInfo
-        sessionStorage.setItem('cars',JSON.stringify([{id,cover,name,price,count:1}]))
+        let {id:product_id,cover,name,price} = this.goodsInfo
+        sessionStorage.setItem('cars',JSON.stringify([{product_id,cover,name,price,count:1}]))
         this.$router.push({
           path:'/orderok'
         })
@@ -150,7 +153,6 @@ export default {
       // 请求商品详情
       getDetails(gid) {
         this.$http.getGoodsDetails(gid).then(data => {
-          // console.log(data.data.data.id)
           this.goodsInfo = data.data.data
         })
       }

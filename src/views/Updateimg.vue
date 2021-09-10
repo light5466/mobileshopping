@@ -18,31 +18,32 @@
             />
         </main>
 
-        
-        <!-- <label for="test3" class="checkimg">
-            <button class="checkimg" >选择图片</button><input id="test3" type="file"/>
-        </label> -->
         <div class="files">
             <button class="checkimg" @click="checkimg">选择图片</button>
             <input type="file" hidden ref="filei" @change="fileChange">
         </div>
-        <!-- <button class="checkimg" @click="checkimg($event)">选择图片</button> -->
         <button class="updateimgs" @click="updateimgs">上传图片</button>
 
   </div>
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import {mapState,mapMutations} from 'vuex'
 export default {
     name : 'Updateimg',
     data() {
         return {
-            avatar:'https://img01.yzcdn.cn/vant/cat.jpeg'
+            avatar:''
         }
     },
+    created() {
+        this.getImg()
+    },
     methods: {
-        ...mapActions(['changeUserInfom']),
+        ...mapMutations(['changeAvatarImg']),
+        getImg() {
+            this.avatar = 'http://192.168.0.8:8360'+this.userInfo.avatar
+        },
         // 读取照片
         fileChange() {
             let that = this
@@ -50,32 +51,39 @@ export default {
             if(!this.$refs.filei.files[0]) {
                 return
             }
-            console.log(this.$refs.filei.files[0])
+            // console.log(this.$refs.filei.files[0])
             reader.readAsDataURL(this.$refs.filei.files[0]);
             reader.onload = function() {
-                // console.log(this.result)
                 that.avatar = this.result
             }
         },
         // 选择图片
        checkimg() {
-           console.log('选择')
            this.$refs.filei.click()
        },
         //上传图片
        updateimgs() {
-           this.$toast('修改成功')
-        //    this.$http.setAvatar(data).then (data => {
-        //        console.log(data)
-        //    })
+           if(!this.$refs.filei.files[0]) {
+                this.$toast('请选择图片')
+                return
+            }
+           let formDate = new FormData()
+           formDate.append('avatar',this.$refs.filei.files[0])
 
-            // 请求用户信息 修改vuex中的数据
-            // this.$http.getUserInfo().then(data => {
-            //     console.log(data.data.data)
-            //     this.changeUserInfom(data.data.data)
-            // })
+           this.$http.setAvatar(formDate).then (data => {
+            //    console.log(data.data)
+               if(data.data.errcode != 0) return this.$toast(data.data.errmsg)
+               // 请求用户信息 修改vuex中的数据
+               this.changeAvatarImg(data.data.data.avatar)
+               this.$toast('修改成功')
+               this.$router.replace('/mine')
+           })
+           
        }
     },
+    computed:{
+        ...mapState(['userInfo']),
+    }
 }
 </script>
 
@@ -96,11 +104,6 @@ export default {
     .files{
         height: 50px;
         width: 100vw;
-        // text-align: center;
-        // line-height: 50px;
-        // background-color: #74d8ce;
-        // color: white;
-        // border: none;
         position: relative;
     }
     .filei {

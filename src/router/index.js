@@ -26,13 +26,23 @@ const orderok = () => import('views/Orderok.vue')
 const addrescheck = () => import('views/Addrescheck.vue')
 const success = () => import('views/Success.vue')
 
-//解决跳转重定向报错的问题
-const originalReplace = VueRouter.prototype.push
-VueRouter.prototype.push = function push(location) {
-  return originalReplace.call(this, location).catch(err => err)
+Vue.use(VueRouter);
+
+// //解决编程式路由往同一地址跳转时会报错的情况
+const originalPush = VueRouter.prototype.push
+const originalReplace = VueRouter.prototype.replace
+
+//push
+VueRouter.prototype.push = function push(location, onResolve, onReject) {
+    if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+    return originalPush.call(this, location).catch(err => err)
 }
 
-Vue.use(VueRouter);
+//replace
+VueRouter.prototype.replace = function push(location, onResolve, onReject) {
+    if (onResolve || onReject) return originalReplace.call(this, location, onResolve, onReject)
+    return originalReplace.call(this, location).catch(err => err)
+}
 
 const routes = [
   {
@@ -214,7 +224,7 @@ router.beforeEach((to, from, next) => {
       }else {
         next()
       }
-    }, 200);
+    }, 300);
   }else {
     next()
   }

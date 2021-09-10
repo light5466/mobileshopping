@@ -17,7 +17,7 @@
                 :desc="'￥'+item.price"
                 :title="item.name"
                 :thumb="item.cover"
-                @click="toDetails(item.product_id)"
+                @click-thumb="toDetails(item.product_id)"
               > 
                 <template #num>
                   <van-stepper v-model="item.count" @change="changeCount(item.product_id,item.count)"/>
@@ -25,16 +25,14 @@
                 </template>
               </van-card>
             </div>
-            
-            
-              
-          </div>
 
+          </div>
+          <!-- 没有商品展示的信息 -->
           <div class="error" @click="$router.push('/home')" v-else>
             <van-icon name="shop" size='70px' color='#aee'/>
             <h3>购物车没有商品</h3>
           </div>
-
+          <!-- 底部展示信息 -->
           <van-submit-bar :price="totalPrice" button-text="提交订单" @submit="onSubmit" :disabled="!isflag" >
             <template #default>
               共计：<span>{{totalCouunt}}</span>件
@@ -67,12 +65,12 @@ export default {
         query:{gid:id}
       })
     },
+    // 点击提交
     onSubmit(){
-      // console.log(this.cars)
       let carList = this.cars.filter(item => {
         if (item.checked) {
-          let {product_id:id,name,price,cover,count} = item
-          return {id,name,price,cover,count}
+          let {product_id,name,price,cover,count} = item
+          return {product_id,name,price,cover,count}
         }
       })
       sessionStorage.setItem('cars',JSON.stringify(carList))
@@ -98,10 +96,12 @@ export default {
     },
     changeCount(ids,count) {
       // // 服务器修改
-      this.$http.updateCarList(ids,count)
+      let checked = this.cars[this.cars.findIndex(item => item.product_id == ids)].checked
+      this.$http.updateCarList(ids,count,checked)
     },
     changeChecked(flag,ids){
-      this.$http.updateCarList(ids,+flag)
+      let count = this.cars[this.cars.findIndex(item => item.product_id == ids)].count
+      this.$http.updateCarList(ids,count,+flag)
     }
   },
   computed:{

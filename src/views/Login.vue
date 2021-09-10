@@ -49,13 +49,12 @@ export default {
         ...mapActions(['changeUserInfom']),
         // 提交登录
         onSubmit(values) {
-            // console.log('submit', values);
             this.$http.toLogiin(values.username,values.password).then(data => {
                 if(data.data.errcode == 90102) {
                     this.$toast(data.data.errmsg)
+                    this.password = ''
                 }
                 if(data.data.errcode == 0) {
-                    // console.log(data.data)
                     // 保存token
                 sessionStorage.setItem('token',data.data.data.token)
                     // 保存至vuex

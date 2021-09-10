@@ -57,16 +57,11 @@ export default {
                 this.newPassword = this.oldPassword = ''
             }else {  
                 this.$http.updatePassword(this.oldPassword,this.newPassword).then ()
-                // 请求用户信息 修改vuex中的数据
-                this.$http.getUserInfo().then(data => {
-                    this.changeUserInfom(data.data.data)
-                    this.$toast('修改成功')
-                })
                 this.newPassword = this.oldPassword = ''
                 // 然后退出登录返回我的页面
                 sessionStorage.removeItem("token")
                 this.changeUserInfo({})
-                this.$router.push('/mine')
+                this.$router.replace('/mine')
             }
         }
     },

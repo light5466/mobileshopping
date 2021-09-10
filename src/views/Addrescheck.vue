@@ -8,7 +8,7 @@
         </template>
         </van-nav-bar>
 
-         <main class="main">
+        <main class="main">
             <van-address-list
             v-model="chosenAddressId"
             :list="list"
@@ -50,21 +50,22 @@ export default {
                 this.list.push(listItem)
             })   
         },
+        // 点击添加
         onAdd() {
             this.$router.push({
                 path:'/updateaddress',
                 query:{ids:0}
             })
         },
+        // 点击编辑
         onEdit(item) {
-            // console.log(item,index)
             this.$router.push({
                 path:'/updateaddress',
                 query:{ids:item.id}
             })
         },
+        // 点击选择跳转回去渲染
         selectA(item) {
-            // console.log(item.id)
             this.$router.push({
                 path:'/orderok',
                 query:{id:item.id}

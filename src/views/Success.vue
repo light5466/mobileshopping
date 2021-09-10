@@ -2,8 +2,8 @@
   <div class="success">
       <van-icon name="checked" color='green' size='70px'/>
       <h2>恭喜你，支付成功</h2>
-      <p @click="$router.push('/home')">返回首页</p>
-      <p @click="$router.push('/myorder')">查看详情</p>
+      <p @click="$router.replace('/home')">返回首页</p>
+      <p @click="$router.replace('/myorder')">查看详情</p>
   </div>
 </template>
 

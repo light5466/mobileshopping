@@ -9,6 +9,10 @@ export default new Vuex.Store({
     userInfo:{},
   },
   mutations: {
+    // 修改头像
+    changeAvatarImg(state,data){
+      state.userInfo.avatar = data
+    },
     // 修改城市
     changeCitys(state,city){
       state.city = city

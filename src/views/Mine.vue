@@ -4,7 +4,7 @@
     <div class="header">
       <template v-if="JSON.stringify(userInfo) != '{}'">
         <div class="myImg">
-          <img v-lazy="userInfo.avatar" alt="" class="userImg1">
+          <img v-lazy="'http://192.168.0.8:8360'+userInfo.avatar" alt="" class="userImg1">
         </div>
         <a href="#" class="login" >{{userInfo.nickname}}</a>
       </template>

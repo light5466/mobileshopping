@@ -1,7 +1,7 @@
 <template>
   <div class="orderdetail">
                 <!-- 头部 -->
-        <van-nav-bar title="订单详情" :fixed='true' @click-left='$router.back()'>
+        <van-nav-bar title="订单详情" :fixed='true' @click-left="$router.push('/myorder')">
         <template #left >
             <van-icon name="arrow-left" color='#0ef8e1' size="20" />
             <span style="color:#0ef8e1">返回</span>
@@ -17,8 +17,6 @@
                 <van-step>已完成</van-step>
             </van-steps>
 
-            <!-- 地址栏:title="orderinfo.userAddress.name +' '+orderinfo.userAddress.mobile" 
-            :label="orderinfo.userAddress.province+' '+orderinfo.userAddress.city+' '+orderinfo.userAddress.country+' '+orderinfo.userAddress.detail"-->
             <van-cell :title="addr.name +' '+addr.mobile" 
             :label="addr.province+' '+addr.city+' '+addr.country+' '+addr.detail" />
 
@@ -39,12 +37,12 @@
             <div class="fleft">
                 <span>合计：</span><span style="color:red">{{totalPriceD | priceFilter}}</span>
             </div>
-            <button class="fright" @click="topay" v-if="orderinfo.order_status == 0">付款</button>
+            <button class="fright" @click="topay" v-if="status == 0">付款</button>
             <button class="fright1" v-else>请等待发货</button>
         </footer>
 
         <!-- 支付密码框 -->
-        <pay-keyword :cid='cid' ></pay-keyword>
+        <pay-keyword :cid='cid' ref="passw"></pay-keyword>
 
   </div>
 </template>
@@ -72,7 +70,7 @@ export default {
             let {data} = await this.$http.getOrder(this.$route.query.orderid)
             if(data.errcode != 0 ) {
                 this.$toast(data.errmsg)
-                this.$router.back()
+                this.$router.replace('myorder')
                 return 
             }
             data.data.orderProducts.forEach((item,index) => {
@@ -87,7 +85,7 @@ export default {
         topay() {
             this.cid = this.$route.query.orderid
             // 偏方弹出密码框
-            this.$children[this.$children.length - 1].show = true
+            this.$refs.passw.show = true
         }
     },
     computed:{

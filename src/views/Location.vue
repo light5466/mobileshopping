@@ -1,8 +1,6 @@
 <template>
   <div class="location">
       <!-- navbar  使用插槽-->
-    <!-- <van-nav-bar :fixed='true' :left-text="city" left-arrow @click-left='$router.back()' z-index='9'>
-    </van-nav-bar> -->
     <van-nav-bar :fixed='true' @click-left='$router.back()'>
       <template #left >
           <van-icon name="arrow-left" color='#0ef8e1' size="20" />

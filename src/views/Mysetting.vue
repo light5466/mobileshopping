@@ -39,11 +39,7 @@ export default {
         signOut(){
             sessionStorage.removeItem("token")
             this.changeUserInfo({})
-            this.$router.push('/mine')
-            // this.$http.getSignOut().then(data => {
-            //     console.log(data)
-                
-            // })  
+            this.$router.push('/mine') 
         },
     },
 }

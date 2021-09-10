@@ -91,7 +91,6 @@ export default {
           width: 48vw;
           padding: 6px;
           box-sizing: border-box;
-          // outline: 1px solid rgba(111, 111, 111, .3);
           border: 1px solid rgba(111, 111, 111, .3);
           box-shadow: 0px 1px 2px rgba(111, 111, 111, .4);
           border-radius: 8px;

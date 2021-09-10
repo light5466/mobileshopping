@@ -13,6 +13,7 @@
 
     <!-- 主要内容区。 -->
     <main class="main" @scroll="mainScroll" ref="rmain" >
+      <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
       <div class="content" ref="rcontent">
 
         <div class="good-list" v-for="item in goodList" :key="item.id" @click="toDetail(item.id)">
@@ -22,9 +23,9 @@
             <span>{{item.price | priceFilter }}</span>
           </div>
         </div>
-        
 
       </div>
+      </van-pull-refresh>
     </main>
 
     <!-- 跳转至顶部悬框 -->
@@ -46,6 +47,7 @@ export default {
       isfinaly: false,
       isUp:false,
       activeToup : {},
+      isLoading: false,
     
     }
   },
@@ -62,6 +64,13 @@ export default {
 
   },
   methods: {
+    // 下拉刷新
+        onRefresh() {
+            setTimeout(() => {
+                this.$toast('刷新成功');
+                this.isLoading = false;
+            }, 1000);
+        },
     // 下拉触底事件
     mainScroll() {
       let {scrollHeight,scrollTop,offsetHeight} = this.$refs.rmain
@@ -116,8 +125,6 @@ export default {
   .home {
     width: 100vw;
     overflow: hidden;
-    // transform: translateY(0px);
-    // transition: all .8s;
 
     // 商品详情样式
     .main{
@@ -136,7 +143,6 @@ export default {
           width: 48vw;
           padding: 6px;
           box-sizing: border-box;
-          // outline: 1px solid rgba(111, 111, 111, .3);
           border: 1px solid rgba(111, 111, 111, .3);
           box-shadow: 0px 1px 2px rgba(111, 111, 111, .4);
           border-radius: 8px;

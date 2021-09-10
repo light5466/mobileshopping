@@ -1,24 +1,22 @@
-# mobile-shopping
+## 一个以vue打造的商城项目
+### 包含主要的商品浏览，商品展示，下拉刷新，触底拉新，购物车，收藏，订单生产，地址信息，个人信息等内容
+### 使用到的技术 vue框架以及vue全家桶  ui使用vant   接口使用外接  测试可用（外网不可用）
 
-## Project setup
-```
-yarn install
-```
+## 首页部分
+  #### 包括商品的展示，主要以flex弹性布局，主要功能有下拉刷新，触底刷新等
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+## 购物车部分
+   #### 功能包括商品的增删改查 点击添加以及删除  选择 数量的加减等，还有数量以及价格的合计
+   
+## 我的个人中心
+   #### 功能包括登录 查看我的收藏 我的地址，以及修改个人基本信息等
 
-### Compiles and minifies for production
-```
-yarn build
-```
+## 商品详情页面
+   #### 主要是商品的展示，功能包括点击收藏，加入购物车，立即购买等
 
-### Lints and fixes files
-```
-yarn lint
-```
+## 创建订单 
+   #### 功能包括创建订单，下单
+   #### 需要设置收货地址以及商品详情信息  模拟输入密码判断，进入待付款以及已支付完成页面
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 使用请先安装npm包
+

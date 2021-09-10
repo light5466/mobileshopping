@@ -39,13 +39,13 @@ export default {
     methods: {
         ...mapActions(['changeUserInfom']),
         onSubmit() {
-            this.$http.updateSetting(this.newName).then (data => {
-                this.$toast('修改成功！')
+            this.$http.updateSetting(this.newName).then (data => {  
                 this.newName = ''
                   // 请求用户信息 修改vuex中的数据
                 this.$http.getUserInfo().then(data => {
-                    console.log(data.data.data)
                     this.changeUserInfom(data.data.data)
+                    this.$toast('修改成功！')
+                    this.$router.replace('/mine')
                 })
             })
         }

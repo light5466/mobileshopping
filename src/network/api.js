@@ -73,11 +73,7 @@ export default {
         return httpRequest.request({
             url:'/user/avatar',
             method:'post',
-            data:{
-                // 需要修改
-                avatar:data
-            }
-            // 需要登录
+            data
         })
     },
     // 新增收获地址

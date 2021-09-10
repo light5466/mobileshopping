@@ -54,7 +54,7 @@ export default {
                 this.show = false
                 // 发送请求
                 this.$http.payOrder(this.value,this.cid).then(data => {
-                    console.log(data)
+                    // console.log(data)
                     // 下单出错
                     if(data.data.errcode != 0) {
                         this.$toast(data.data.errmsg)
@@ -70,9 +70,9 @@ export default {
         showfail(){
             // 未支付，跳转至订单详情
             this.show = false
-            this.$router.push({
+            this.$router.replace({
                 path:'/orderdetail',
-                query:{id:this.cid}
+                query:{orderid:this.cid}
             })
         }
     },
